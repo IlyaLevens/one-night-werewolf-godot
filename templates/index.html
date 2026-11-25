@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>One Night Werewolf · Одна ночь</title>
+  <link rel="icon" href="/static/moon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css?v=20261029-lighting">
+  <link rel="stylesheet" href="/static/atmosphere.css?v=20261029-lighting">
+  <script src="/static/atmosphere.js?v=20261029-lighting" defer></script>
+  <script src="/static/table.js?v=20261029-lighting" defer></script>
+  <script src="/static/music.js?v=20261029-lighting" defer></script>
+  <script src="/static/scoreboard.js?v=20261029-lighting" defer></script>
+  <script src="/static/dialogs.js?v=20261029-lighting" defer></script>
+  <script src="/static/turns.js?v=20261029-lighting" defer></script>
+  <script src="/static/app.js?v=20261029-lighting" defer></script>
+</head>
+<body data-atmosphere="lobby">
+  <div class="ambient-world" aria-hidden="true"><div class="sky-layer sky-evening"></div><div class="sky-layer sky-dusk"></div><div class="sky-layer sky-night"></div><div class="sky-layer sky-dawn"></div><div class="sky-layer sky-voting"></div><div class="sky-layer sky-day"></div></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="На главную"><span class="brand-moon">◒</span><span>ONE NIGHT <b>WEREWOLF</b></span></a>
+    <div class="header-right"><button id="scoreboard-open" class="secondary" hidden>Счёт</button><span id="connection" class="connection">Вечер начинается</span><button id="rules-open" class="quiet">Как играть <span>↗</span></button></div>
+  </header>
+  <section class="music-bar" aria-label="Фоновая музыка">
+    <span class="music-mark" aria-hidden="true">♫</span>
+    <div class="music-description"><b>Музыка лобби</b><span id="music-status" role="status">Войдите в лобби, чтобы слушать вместе</span></div>
+    <label class="music-track-label"><span class="sr-only">Музыкальный трек</span><select id="music-track" disabled><option>Папка music</option></select></label>
+    <div id="music-host-controls" class="music-host-controls" hidden><button id="music-play" class="secondary" disabled>▶ Включить всем</button><button id="music-next" class="quiet" aria-label="Следующий трек для всех" disabled>Следующий ↦</button></div>
+    <button id="music-local" class="secondary" disabled aria-pressed="false">♫ Разрешить музыку</button>
+    <label class="music-volume">Громкость <input id="music-volume" type="range" min="0" max="100" value="35" aria-label="Громкость музыки"></label>
+    <button id="music-refresh" class="quiet" aria-label="Обновить список музыки" title="Обновить список музыки">↻</button>
+    <audio id="background-music" preload="metadata"></audio>
+  </section>
+  <main id="app"><div class="loading">Зажигаем фонари…</div></main>
+  <footer>Одна ночь · 3–10 друзей · Никто не выбывает до финала</footer>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="scoreboard-dialog" aria-label="Таблица счёта"><button id="scoreboard-close" class="dialog-close quiet" aria-label="Закрыть счёт">✕</button><div id="scoreboard-modal"></div></dialog>
+  <dialog id="action-dialog" aria-labelledby="action-title" aria-describedby="action-message">
+    <button id="action-close" class="dialog-close quiet" type="button" aria-label="Закрыть окно">✕</button>
+    <p class="eyebrow">ONE NIGHT · WEREWOLF</p>
+    <h2 id="action-title"></h2><p id="action-message" class="muted"></p>
+    <textarea id="action-value" readonly hidden rows="3" aria-label="Текст для копирования"></textarea>
+    <div class="dialog-actions"><button id="action-cancel" class="secondary" type="button">Отмена</button><button id="action-confirm" class="primary" type="button">Подтвердить</button></div>
+  </dialog>
+  <dialog id="turn-dialog" aria-labelledby="turn-title" aria-describedby="turn-message">
+    <div class="turn-content">
+      <p class="eyebrow">ВАШЕ ВРЕМЯ ПРИШЛО</p>
+      <div class="turn-moon" aria-hidden="true">☾</div>
+      <span id="turn-role" class="pill"></span>
+      <h2 id="turn-title">Ваш ход!</h2><p id="turn-message"></p>
+      <div class="turn-time"><span>До конца этапа</span><strong id="turn-countdown"></strong></div>
+      <button id="turn-continue" class="primary" type="button">Перейти к ходу</button>
+      <button id="turn-scoreboard" class="quiet" type="button">Посмотреть счёт</button>
+      <p class="small muted">Таймер идёт, пока открыто уведомление.</p>
+    </div>
+  </dialog>
+  <dialog id="rules-dialog">
+    <button class="dialog-close quiet" id="rules-close" aria-label="Закрыть правила">✕</button>
+    <p class="eyebrow">ПРАВИЛА ЗА МИНУТУ</p><h2>Не верьте первому впечатлению.</h2>
+    <ol class="rules-list">
+      <li><b>Получите роль.</b> У каждого одна карта, ещё три лежат в центре. Начальная роль определяет, что вы делаете ночью.</li>
+      <li><b>Дождитесь своей очереди.</b> Сервер проведёт ночь. Некоторые роли смотрят карты, другие меняют их местами. Не рассказывайте о действиях до утра.</li>
+      <li><b>Обсудите произошедшее.</b> Можно говорить правду или блефовать. Ваша карта могла измениться: дневной экран показывает только начальную роль и известные вам события.</li>
+      <li><b>Проголосуйте.</b> Выберите другого игрока. Тот, кто получил больше всего голосов (минимум два), погибает. При равенстве погибают все лидеры.</li>
+      <li><b>Узнайте результат.</b> Команда определяется последней картой. Деревня побеждает, если погиб хотя бы один оборотень. Кожевник хочет погибнуть сам.</li>
+    </ol>
+    <p class="muted">Если оборотней нет у игроков, деревня выигрывает без казни либо при гибели приспешника. Гибель кожевника без гибели оборотня даёт победу только кожевнику. Охотник забирает с собой того, против кого голосовал.</p>
+    <p class="muted">Таймеры: не сделанный вовремя необязательный ход пропускается; пьянице сервер случайно выбирает карту; не поданный вовремя голос не учитывается. Это правила этой онлайн-версии.</p>
+    <div id="role-guide" class="role-guide"></div>
+  </dialog>
+</body>
+</html>

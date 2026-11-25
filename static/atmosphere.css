@@ -1,0 +1,164 @@
+/* All six skies are persistent layers: changing phase crossfades them without a flash. */
+body{--phase-panel:#25242a;--phase-border:#554536;--phase-felt:#414335;--phase-glow:#d7a35b28;--hill-far:#5b414a;--hill-near:#292e30;--forest:#333039;--window-light:#ffcf80;--phase-accent:#edc88d;background:#101725;isolation:isolate}
+body[data-atmosphere="reveal"]{--phase-panel:#202233;--phase-border:#4f455f;--phase-felt:#2b3c43;--phase-glow:#9e87c623;--hill-far:#4e405e;--hill-near:#202635;--forest:#292c40;--window-light:#c9a36c;--phase-accent:#d2c6ec}
+body[data-atmosphere="night"]{--phase-panel:#121e31;--phase-border:#304963;--phase-felt:#203747;--phase-glow:#83baed26;--hill-far:#26364c;--hill-near:#0c1b2b;--forest:#16283a;--window-light:#3b485a;--phase-accent:#b6d7f3}
+body[data-atmosphere="discussion"]{--phase-panel:#282938;--phase-border:#665260;--phase-felt:#3b454b;--phase-glow:#e7a69622;--hill-far:#706074;--hill-near:#2b3b47;--forest:#374756;--window-light:#b9a08b;--phase-accent:#f0c2ab}
+body[data-atmosphere="voting"]{--phase-panel:#29252e;--phase-border:#725348;--phase-felt:#3e3a3e;--phase-glow:#df805b20;--hill-far:#66505b;--hill-near:#2a303a;--forest:#3b3440;--window-light:#8c7867;--phase-accent:#eeb294}
+body[data-atmosphere="results"]{--phase-panel:#29343a;--phase-border:#637369;--phase-felt:#43554a;--phase-glow:#f6d88b26;--hill-far:#7f9696;--hill-near:#314d4b;--forest:#486663;--window-light:#c2b78b;--phase-accent:#f5dba2}
+.ambient-world{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#101725}
+.ambient-world::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#070e1933,#070e19b3 75%)}
+.sky-layer{position:absolute;inset:0;opacity:0;transition:opacity 2.4s ease;pointer-events:none}
+.sky-evening{background:radial-gradient(ellipse at 76% 75%,#dc945978,transparent 50%),linear-gradient(180deg,#292837,#7c5554 60%,#c0956c)}
+.sky-dusk{background:radial-gradient(ellipse at 78% 30%,#b2b4e31c,transparent 45%),linear-gradient(180deg,#171d37,#493b60 66%,#8d6673)}
+.sky-night{background:radial-gradient(ellipse at 77% 20%,#7198c52b,transparent 45%),linear-gradient(180deg,#071123,#172b48 65%,#2c4053)}
+.sky-dawn{background:linear-gradient(180deg,#45516d,#b68b98 58%,#edbd94)}
+.sky-voting{background:radial-gradient(ellipse at 76% 65%,#d8a17d33,transparent 35%),linear-gradient(180deg,#4b4459,#8e666b 60%,#b58c76)}
+.sky-day{background:radial-gradient(ellipse at 76% 20%,#f5e6b75c,transparent 55%),linear-gradient(180deg,#6e9cad,#bac7ba 70%,#ead7ac)}
+body[data-atmosphere="lobby"] .sky-evening,body[data-atmosphere="reveal"] .sky-dusk,body[data-atmosphere="night"] .sky-night,body[data-atmosphere="discussion"] .sky-dawn,body[data-atmosphere="voting"] .sky-voting,body[data-atmosphere="results"] .sky-day{opacity:1}
+.panel{background:linear-gradient(140deg,#ffffff04,#00000018),var(--phase-panel);border-color:var(--phase-border);transition:background-color 2.4s,border-color 2.4s,box-shadow 2.4s}
+.phase-banner{background:linear-gradient(105deg,#ffffff06,#00000025),var(--phase-panel);border-color:var(--phase-border);box-shadow:0 8px 35px var(--phase-glow);transition:background-color 2.4s,border-color 2.4s,box-shadow 2.4s}
+.phase-symbol{color:var(--phase-accent);transition:color 2.4s}
+.music-bar{background:var(--phase-panel);border-color:var(--phase-border);transition:background-color 2.4s,border-color 2.4s}
+.table-panel{box-shadow:0 20px 70px #0004,0 0 70px var(--phase-glow)}
+.table-felt{background:radial-gradient(ellipse at center,#ffffff05,#00000040),var(--phase-felt);box-shadow:0 0 0 2px #74604a,0 0 0 9px #242629,0 24px 35px #0006,inset 0 0 70px var(--phase-glow);transition:background-color 2.4s,box-shadow 2.4s}
+.phase-landscape{position:relative;isolation:isolate;height:232px;margin:-24px -26px 24px;overflow:hidden;border-bottom:1px solid var(--phase-border);background:#172238}
+.scene-art{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.scene-stars{position:absolute;width:100%;height:100%;fill:#e0e9ff;opacity:0;transition:opacity 2.4s;animation:star-breathe 8s ease-in-out infinite alternate}
+body[data-atmosphere="night"] .scene-stars{opacity:.85}
+body[data-atmosphere="reveal"] .scene-stars{opacity:.4}
+.scene-sun,.scene-moon{position:absolute;left:76%;top:24px;width:78px;height:78px;border-radius:50%;transition:transform 2.8s cubic-bezier(.2,.65,.3,1),opacity 2.2s ease,background-color 2.4s;will-change:transform,opacity}
+.scene-sun{background:#ffdda0;box-shadow:0 0 35px 12px #ffdd9855,0 0 100px 35px #f3bc6333;transform:translate(-50%,55px);opacity:.95}
+.sun-rays{position:absolute;inset:-30px;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffe4a416 0deg 10deg,transparent 10deg 30deg);mask-image:radial-gradient(circle,transparent 35%,#000 45%,transparent 70%);animation:sun-drift 100s linear infinite}
+.scene-moon{background:radial-gradient(circle at 68% 28%,#98b0c66e 0 7%,transparent 8%),radial-gradient(circle at 34% 64%,#91abc063 0 12%,transparent 13%),radial-gradient(circle at 69% 71%,#95aebe55 0 5%,transparent 6%),radial-gradient(circle at 35% 30%,#e8f1ed,#c2d3da 60%,#8fa8bf);box-shadow:0 0 26px 5px #d1e4ff2e,0 0 100px 22px #9ac6fc20;opacity:0;transform:translate(-50%,100px) scale(.86)}
+body[data-atmosphere="reveal"] .scene-moon{opacity:.6;transform:translate(-50%,36px) scale(.92)}
+body[data-atmosphere="night"] .scene-moon{opacity:1;transform:translate(-50%,0)}
+body[data-atmosphere="reveal"] .scene-sun,body[data-atmosphere="night"] .scene-sun{opacity:0;transform:translate(-50%,210px)}
+body[data-atmosphere="discussion"] .scene-sun{opacity:.85;transform:translate(-50%,88px);background:#ffbd92}
+body[data-atmosphere="voting"] .scene-sun{opacity:.45;transform:translate(-50%,56px);background:#e8b599}
+body[data-atmosphere="results"] .scene-sun{opacity:1;transform:translate(-50%,0)}
+.scene-cloud{position:absolute;left:47%;top:24%;width:45%;height:58px;opacity:.35;background:radial-gradient(ellipse at 30% 60%,#c5cbd26b,transparent 63%),radial-gradient(ellipse at 60% 40%,#c5cbd257,transparent 62%);animation:cloud-drift 65s ease-in-out infinite alternate;transition:opacity 2.4s}
+.cloud-two{left:58%;top:42%;width:38%;height:40px;animation-duration:90s;animation-direction:alternate-reverse;opacity:.25}
+body[data-atmosphere="voting"] .scene-cloud{opacity:.85}
+body[data-atmosphere="night"] .scene-cloud{opacity:.18}
+.village-landscape{position:absolute;inset:0;width:100%;height:100%}
+.hill-far{fill:var(--hill-far)}.hill-near{fill:var(--hill-near)}.forest{fill:var(--forest)}
+.village-house{fill:var(--hill-near)}.village-roof{fill:none;stroke:#101d2d;stroke-width:3;stroke-linejoin:round}
+.village-window{fill:var(--window-light)}.village-road{fill:#b4b7a5;opacity:.16}
+.village-landscape path,.village-landscape g{transition:fill 2.4s}
+.scene-mist{position:absolute;inset:60% -20% -12%;background:radial-gradient(ellipse at 50% 50%,#b2c8d52c,transparent 65%);opacity:.7;animation:mist-drift 34s ease-in-out infinite alternate;transition:opacity 2.4s}
+body[data-atmosphere="night"] .scene-mist{opacity:.45}body[data-atmosphere="results"] .scene-mist{opacity:.15}
+.scene-vignette{position:absolute;inset:0;background:linear-gradient(90deg,#08101deb,transparent 67%),linear-gradient(0deg,#0b13276b,transparent 35%)}
+.scene-copy{position:absolute;top:34px;left:30px;right:35%;color:#f3eee7;pointer-events:none;text-shadow:0 1px 12px #0005}
+.scene-copy .eyebrow{display:block;font-size:8px;letter-spacing:2.5px;color:#e2ceb0;margin:0 0 15px}
+.scene-copy h3{font:30px Georgia,"Times New Roman",serif;letter-spacing:-.5px;margin:0 0 12px}
+.scene-caption{font-size:12px;line-height:1.65;color:#d1d4d6;max-width:275px;margin:0}
+.scene-motion{position:absolute;bottom:13px;right:18px;color:#e0e7ea;background:#0d1829bd;border:1px solid #c0d5e024;border-radius:20px;padding:6px 11px;font-size:10px;backdrop-filter:blur(5px)}
+.scene-candle{position:absolute;bottom:0;left:32px;width:10px;height:28px;background:linear-gradient(90deg,#7a6750,#ba9b72,#655541);border-radius:3px 3px 0 0;opacity:.85}
+.candle-right{left:53px;height:20px;width:8px}
+.scene-candle span{position:absolute;bottom:100%;left:1px;width:8px;height:17px;border-radius:60% 40% 50% 50%;background:radial-gradient(ellipse at 50% 80%,#fff4c3,#f9b460 50%,#d3752b99);box-shadow:0 0 15px 5px #efb86d55,0 0 50px 20px #efb86d16;animation:candle-breathe 3s ease-in-out infinite alternate;transition:opacity 1.8s}
+.candle-right span{width:6px;height:12px;animation-delay:-1.3s}
+body[data-atmosphere="night"] .scene-candle span,body[data-atmosphere="discussion"] .scene-candle span,body[data-atmosphere="voting"] .scene-candle span,body[data-atmosphere="results"] .scene-candle span{opacity:0}
+body[data-atmosphere="reveal"] .scene-candle span{opacity:.4}
+#turn-dialog{background:radial-gradient(ellipse at 50% 30%,var(--phase-glow),transparent 65%),var(--phase-panel);transition:background-color 2.4s}
+.turn-moon{color:var(--phase-accent);border-color:var(--phase-border);box-shadow:0 0 80px var(--phase-glow)}
+@keyframes star-breathe{from{fill-opacity:.45}to{fill-opacity:1}}
+@keyframes cloud-drift{from{transform:translateX(-12%)}to{transform:translateX(24%)}}
+@keyframes mist-drift{from{transform:translateX(-7%)}to{transform:translateX(7%)}}
+@keyframes sun-drift{to{transform:rotate(360deg)}}
+@keyframes candle-breathe{from{transform:scale(.93,1) rotate(-3deg)}to{transform:scale(1.07,.93) rotate(3deg)}}
+.atmosphere-paused .scene-art *{animation-play-state:paused!important}
+body[data-atmosphere-motion="off"] .scene-art *,body[data-atmosphere-motion="off"] .ambient-world *{animation:none!important;transition:none!important}
+body[data-atmosphere-motion="off"] :is(.panel,.phase-banner,.music-bar,.table-felt,#turn-dialog,.phase-symbol){transition:none!important}
+@media(max-width:900px){.phase-landscape{margin:-20px -18px 20px}}
+@media(max-width:740px){.phase-landscape{height:205px;margin:-18px -12px 18px}.scene-copy{top:26px;left:18px;right:30%}.scene-copy h3{font-size:24px;max-width:170px}.scene-copy .eyebrow{font-size:6px;letter-spacing:1.7px;margin-bottom:12px}.scene-caption{font-size:10px;max-width:170px}.scene-moon,.scene-sun{width:52px;height:52px;left:81%;top:20px}.scene-motion{bottom:10px;right:10px;font-size:9px}.scene-candle{left:19px}.candle-right{left:39px}.scene-vignette{background:linear-gradient(90deg,#08101de6,transparent 85%),linear-gradient(0deg,#0b13278a,transparent 30%)}}
+@media(prefers-reduced-motion:reduce){.scene-art *,.ambient-world *{animation:none!important;transition:none!important}}
+/* Candlelight sits in front of the dark window vignette. */
+.scene-candle{z-index:1}.scene-copy,.scene-motion{z-index:2}
+
+/* Carved rim, velvet and a faded gilt seal beneath the cards. */
+.table-felt {
+  border-color: #392928;
+  background:
+    radial-gradient(ellipse at center, transparent 24%, #240c1882 74%, #120e18bd),
+    repeating-linear-gradient(33deg, #ffdfcb06 0 1px, transparent 1px 4px),
+    linear-gradient(125deg, #461e32b8, #301528dc 65%, #542135ba), var(--phase-felt);
+  box-shadow: 0 0 0 1px #ad8356, 0 0 0 5px #21191e, 0 0 0 7px #6e4e37,
+    0 18px 34px #09060eb5, inset 0 0 24px #130b14, inset 0 0 75px var(--phase-glow);
+}
+.table-felt .felt-ring { border: 3px double #b9956261; }
+.table-felt .felt-ring:after { border-color: #c09f6652; }
+.ritual-seal {
+  position: absolute;
+  width: min(64%, 310px);
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 4px double #c39f694a;
+  border-radius: 50%;
+}
+.ritual-seal:before, .ritual-seal:after {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border: 1px solid #be956a42;
+}
+.ritual-seal:after { transform: rotate(45deg); }
+
+.table-candles { position: absolute; inset: 0; pointer-events: none; }
+.candle-group {
+  position: absolute;
+  left: 4%;
+  top: 10%;
+  width: 46px;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 3px;
+  background: radial-gradient(ellipse 50% 8% at 50% 98%, #ba8b51 0%, #584039 72%, transparent);
+}
+.candle-group:nth-child(even) { left: auto; right: 4%; }
+.candle-group:nth-child(n+3) { top: auto; bottom: 8%; }
+.candle-group:before {
+  content: "";
+  position: absolute;
+  inset: -43px -35px -18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ffb25e32, #ed8c3b12 44%, transparent 71%);
+}
+.candle-group i {
+  position: relative;
+  width: 9px;
+  height: 22px;
+  margin-bottom: 3px;
+  border-radius: 45% 45% 2px 2px / 2px 2px 1px 1px;
+  background: linear-gradient(90deg, #8b6856, #f3d5a0 32%, #d3ae7c 63%, #8e6750);
+  box-shadow: inset 0 2px #ffedbc, 1px 2px 3px #100c12;
+}
+.candle-group i:nth-child(2) { height: 36px; }
+.candle-group i:nth-child(3) { height: 16px; }
+.candle-group i:before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 13px;
+  left: 2px;
+  bottom: 100%;
+  border-radius: 80% 20% 55% 45%;
+  transform-origin: bottom center;
+  background: radial-gradient(ellipse at 50% 72%, #fff8d3 17%, #ffd488 48%, #ef8b45 88%);
+  box-shadow: 0 0 6px #ffc878, 0 0 15px #ec8b4780;
+  animation: candle-flame 2.9s ease-in-out infinite alternate;
+}
+.candle-group i:nth-child(2):before { animation-delay: -1.7s; }
+.candle-group i:nth-child(3):before { animation-delay: -.8s; }
+.candle-group:nth-child(even) i:before { animation-direction: alternate-reverse; }
+@keyframes candle-flame {
+  from { transform: rotate(-6deg) scaleY(.93); }
+  to { transform: rotate(5deg) scaleY(1.06); }
+}
+body[data-atmosphere-motion="off"] .candle-group i:before { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .candle-group i:before { animation: none; }
+}
