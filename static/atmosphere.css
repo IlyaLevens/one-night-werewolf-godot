@@ -162,3 +162,46 @@ body[data-atmosphere-motion="off"] .candle-group i:before { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .candle-group i:before { animation: none; }
 }
+
+/* The narrow table uses the same seat positions as the desktop table. */
+@media (max-width: 780px) {
+  .table-scroll-hint { display: none; }
+  .board-viewport { container-type: inline-size; }
+  .board-canvas {
+    overflow: clip;
+    min-width: 0;
+    height: clamp(365px, 110cqw, 560px);
+  }
+  .board-canvas.dense-table { height: clamp(530px, 145cqw, 660px); }
+  .board-canvas .table-felt { inset: 8% 4%; border-width: 5px; }
+  .board-canvas .felt-ring { inset: 7px; }
+  .board-canvas .table-seat { width: 20%; gap: 2px; }
+  .board-canvas .seat-name { max-width: 100%; gap: 2px; font-size: 10px; }
+  .board-canvas .seat-name b { min-width: 0; }
+  .board-canvas .seat-state {
+    max-width: 100%; font-size: 9px; text-align: center; line-height: 1.15;
+  }
+  .board-canvas .table-seat .table-card {
+    width: clamp(44px, 16cqw, 80px); height: auto; aspect-ratio: 3 / 4;
+  }
+  .board-canvas .table-center { gap: 5px; }
+  .board-canvas .table-center-cards { gap: clamp(3px, 1.2cqw, 8px); }
+  .board-canvas .table-center .table-card {
+    width: clamp(42px, 13.5cqw, 65px); height: auto; aspect-ratio: 3 / 4;
+  }
+  .board-canvas .center-place { gap: 2px; }
+  .board-canvas .center-caption { font-size: 7px; letter-spacing: 1px; }
+  .board-canvas .center-footer, .board-canvas .card-signature,
+  .board-canvas .card-ornament { display: none; }
+  .board-canvas .card-moon { font-size: clamp(23px, 7cqw, 36px); }
+  .board-canvas .card-corner { top: 2px; left: 5px; font-size: 7px; }
+  .board-canvas .card-reverse:before { inset: 3px; }
+  .board-canvas .card-reverse:after { inset: 5px; }
+  .board-canvas .card-face { padding: 2px; gap: 1px; }
+  .board-canvas .card-face .role-image { width: 45%; height: auto; }
+  .board-canvas .card-face b { font-size: clamp(8px, 2.4cqw, 11px); }
+  .board-canvas .card-face .face-team, .board-canvas .card-face > small {
+    font-size: 6px; letter-spacing: 0; margin: 0;
+  }
+  .board-canvas .candle-group { transform: scale(.6); transform-origin: center; }
+}
